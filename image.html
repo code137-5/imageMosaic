@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.js"></script>
+    <title> p5js Image</title>
+</head>
+<body>
+    <script>
+        let img; // 변수 'img' 선언
+        let mosaicSize = 20;
+        let imgOrigin;
+
+        function preload(){
+            //img = loadImage('http://127.0.0.1:5000/assets/hen.jpg'); // 이미지 불러오기
+            img = loadImage('https://media.istockphoto.com/id/1496414074/ko/%EC%82%AC%EC%A7%84/%EC%95%84%EC%B9%A8%EC%97%90-%EC%9D%BC%EC%B6%9C-%ED%95%98%EB%8A%98%EA%B3%BC-%ED%95%A8%EA%BB%98-kawah-ijen-%ED%99%94%EC%82%B0%EC%9D%98-%EB%B6%84%ED%99%94%EA%B5%AC%EC%97%90-%EC%84%9C-%EC%9E%88%EB%8A%94-%EC%97%AC%ED%96%89%EC%9E%90-%EB%82%A8%EC%9E%90.jpg?s=1024x1024&w=is&k=20&c=-1AKj3iKKKdpCYyrovJGAxbhfKTtTzWDzqoNfQ_c1mI='); // 이미지 불러오기
+            imgOrigin = img;
+        }
+
+        function setup() {
+            createCanvas(2000, 2000);
+
+            image(img, 0, 0 , img.width / 2, img.height / 2);
+            loadPixels();
+
+            // 각 영역의 평균 색상값을 계산하여 모자이크 효과 적용
+            for (let y = 0; y < height; y += mosaicSize) {
+              for (let x = 0; x < width; x += mosaicSize) {
+                let sumR = 0, sumG = 0, sumB = 0;
+                let count = 0;
+                // 해당 영역의 픽셀들의 색상값을 합산
+                for (let j = 0; j < mosaicSize; j++) {
+                  for (let i = 0; i < mosaicSize; i++) {
+                    let px = x + i;
+                    let py = y + j;
+                    // 캔버스 영역을 벗어나지 않도록 확인
+                    if (px < width && py < height) {
+                      let index = (px + py * width) * 4;
+                      sumR += pixels[index];
+                      sumG += pixels[index + 1];
+                      sumB += pixels[index + 2];
+                      count++;
+                    }
+                  }
+                }
+                // 평균 색상값 계산
+                let avgR = sumR / count;
+                let avgG = sumG / count;
+                let avgB = sumB / count;
+                // 해당 영역의 모든 픽셀을 평균 색상값으로 설정
+                for (let j = 0; j < mosaicSize; j++) {
+                  for (let i = 0; i < mosaicSize; i++) {
+                    let px = x + i;
+                    let py = y + j;
+                    // 캔버스 영역을 벗어나지 않도록 확인
+                    if (px < width && py < height) {
+                      let index = (px + py * width) * 4;
+                      pixels[index] = avgR;
+                      pixels[index + 1] = avgG;
+                      pixels[index + 2] = avgB;
+                    }
+                  }
+                }
+              }
+            }
+            updatePixels(); // 변경된 픽셀을 적용
+        }
+        function draw(){
+            image(imgOrigin, img.width / 2, 0 , imgOrigin.width / 2, imgOrigin.height / 2);
+            
+        }
+    </script>
+</body>
+</html>
